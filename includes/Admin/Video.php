@@ -47,6 +47,10 @@ class Video {
             
             echo '<div class="woopgfs-panel-divider"></div>';
             echo '<h4 class="woopgfs-panel-subheading">'.esc_html__('Product Gallery Video Settings', 'wooc-product-swiper-gallery').'</h4>';
+
+            // Add nonce field
+            wp_nonce_field( 'woopgfs_save_video_settings', 'woopgfs_video_settings_nonce' );
+
             woocommerce_wp_select(
                 array(
                     'id' => 'woopgfs_product_video_type',
@@ -89,6 +93,12 @@ class Video {
         if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){
             return;
         }
+
+        // Verify nonce
+        if ( !isset( $_POST['woopgfs_video_settings_nonce'] ) || !wp_verify_nonce( $_POST['woopgfs_video_settings_nonce'], 'woopgfs_save_video_settings' ) ) {
+            return;
+        }
+
         $options = array(
             'woopgfs_product_video_type',
             'woopgfs_product_popup_video',

@@ -10,7 +10,7 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       xriver-woo-product-gallery
  * Domain Path:       /languages
- * Tested up to: 6.4
+ * Tested up to: 6.4.3
  * WC requires at least: 3.9
  * WC tested up to: 8.3.1
  * Requires PHP: 7.4

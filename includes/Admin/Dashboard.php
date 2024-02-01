@@ -42,6 +42,6 @@ class Dashboard{
      * @return void
      */
     public function plugin_page(){
-        echo __("Welcome To Woocommerce", 'wooc-product-swiper-gallery');
+        echo esc_html__("Welcome To Woocommerce", 'wooc-product-swiper-gallery');
     }
 }

@@ -8,7 +8,14 @@ $images = $product->get_gallery_image_ids();
 $proopt = get_option('woopsg_opt');
 $iframe_video  = get_post_meta( get_the_ID(), 'woopgfs_product_iframe_video', true );
 $popup_video   = get_post_meta( get_the_ID(), 'woopgfs_product_popup_video', true );
-$video_type    = isset($_GET['video']) ? esc_html($_GET['video']) : get_post_meta( get_the_ID(), 'woopgfs_product_video_type', true );
+
+wp_nonce_field('woopsg_product_gallery_nonce', 'woopsg_product_gallery_nonce');
+
+if (isset($_GET['woopsg_product_gallery_nonce']) && wp_verify_nonce($_GET['woopsg_product_gallery_nonce'], 'woopsg_product_gallery_nonce')) {
+    $video_type = isset($_GET['video']) ? esc_html($_GET['video']) : get_post_meta(get_the_ID(), 'woopgfs_product_video_type', true );
+} else {
+    die('Security check failed');
+}
 $attachment_ids = $product->get_gallery_image_ids();
 $lightbox_enable = $proopt['lightbox_enable'];
 ?>
@@ -21,9 +28,9 @@ $lightbox_enable = $proopt['lightbox_enable'];
             <div class="swiper-slide">
                 <div class="product-details-for position-relative">
                     <?php if($lightbox_enable == 1):?>
-                    <span class="product-view-icon   zoom-gallery"><a href="<?php echo get_the_post_thumbnail_url($product->get_id(), 'full');?>" data-source="<?php echo get_the_post_thumbnail_url($product->get_id(), 'full');?>"><i class="fal fa-search"></i></a></span>
+                    <span class="product-view-icon   zoom-gallery"><a href="<?php echo esc_url(get_the_post_thumbnail_url($product->get_id(), 'full'));?>" data-source="<?php echo esc_url(get_the_post_thumbnail_url($product->get_id(), 'full'));?>"><i class="fal fa-search"></i></a></span>
                     <?php endif;?>
-                    <img src="<?php echo get_the_post_thumbnail_url($product->get_id(), 'full');?>" alt="" data-zoomed="<?php echo get_the_post_thumbnail_url($product->get_id(), 'full');?>">
+                    <img src="<?php echo esc_url(get_the_post_thumbnail_url($product->get_id(), 'full'));?>" alt="" data-zoomed="<?php echo esc_attr(get_the_post_thumbnail_url($product->get_id(), 'full'));?>">
                     <?php if ( $popup_video && 'popup' == $video_type &&  $proopt['gallery_video__opt'] == 1 ) {?> 
                     <div class="product-view-video">
                         <a class="video_box" href="<?php echo esc_url($popup_video);?>"><i class="fas fa-play"></i></a>
@@ -36,9 +43,9 @@ $lightbox_enable = $proopt['lightbox_enable'];
             <div class="swiper-slide">
                 <div class="product-details-for position-relative">
                     <?php if($lightbox_enable == 1):?>
-                    <span class="product-view-icon   zoom-gallery"><a href="<?php echo get_the_post_thumbnail_url($product->get_id(), 'full');?>" data-source="<?php echo get_the_post_thumbnail_url($product->get_id(), 'full');?>"><i class="fal fa-search"></i></a></span>
+                    <span class="product-view-icon   zoom-gallery"><a href="<?php echo esc_url(get_the_post_thumbnail_url($product->get_id(), 'full'));?>" data-source="<?php echo esc_attr(get_the_post_thumbnail_url($product->get_id(), 'full'));?>"><i class="fal fa-search"></i></a></span>
                     <?php endif;?>
-                    <img src="<?php echo wp_get_attachment_image_url($attachment_id, 'full');?>" alt="" data-zoomed="<?php echo wp_get_attachment_image_url($attachment_id, 'full');?>">
+                    <img src="<?php echo esc_url(wp_get_attachment_image_url($attachment_id, 'full'));?>" alt="" data-zoomed="<?php echo esc_attr(wp_get_attachment_image_url($attachment_id, 'full'));?>">
                     <?php if ( $popup_video && 'popup' == $video_type &&  $proopt['gallery_video__opt'] == 1 ) {?> 
                     <div class="product-view-video">
                         <a class="video_box" href="<?php echo esc_url($popup_video);?>"><i class="fas fa-play"></i></a>
@@ -67,8 +74,8 @@ $lightbox_enable = $proopt['lightbox_enable'];
         <?php else:?>
             <div class="product_thumb">                
                 <div class="product-details-for position-relative">
-                    <span class="product-view-icon   "><a href="<?php echo wp_get_attachment_image_url(get_post_thumbnail_id(), 'full');?>" data-source="<?php echo wp_get_attachment_image_url(get_post_thumbnail_id(), 'full');?>"><i class="fal fa-search"></i></a></span>
-                    <img src="<?php echo wp_get_attachment_image_url(get_post_thumbnail_id(), 'full');?>" alt="" data-zoomed="<?php echo wp_get_attachment_image_url(get_post_thumbnail_id(), 'full');?>">
+                    <span class="product-view-icon   "><a href="<?php echo esc_url(wp_get_attachment_image_url(get_post_thumbnail_id(), 'full'));?>" data-source="<?php echo esc_attr(wp_get_attachment_image_url(get_post_thumbnail_id(), 'full'));?>"><i class="fal fa-search"></i></a></span>
+                    <img src="<?php echo esc_url(wp_get_attachment_image_url(get_post_thumbnail_id(), 'full'));?>" alt="" data-zoomed="<?php echo esc_attr(wp_get_attachment_image_url(get_post_thumbnail_id(), 'full'));?>">
                     <?php if ( $popup_video && 'popup' == $video_type &&  $proopt['gallery_video__opt'] == 1 ) {?> 
                     <div class="product-view-video">
                         <a class="video_box" href="<?php echo esc_url($popup_video);?>"><i class="fas fa-play"></i></a>
@@ -93,7 +100,22 @@ $lightbox_enable = $proopt['lightbox_enable'];
         foreach ($attachment_ids as $attachment_id) { ?>
             <div class="swiper-slide">
                 <div class="product-details-nav">
-                    <?php echo wp_get_attachment_image($attachment_id, 'thumbnail');?>
+                    <?php
+                        echo wp_kses( wp_get_attachment_image( $attachment_id ), [
+                            'img' => [
+                                'src'      => true,
+                                'srcset'   => true,
+                                'sizes'    => true,
+                                'class'    => true,
+                                'id'       => true,
+                                'width'    => true,
+                                'height'   => true,
+                                'alt'      => true,
+                                'loading'  => true,
+                                'decoding' => true,
+                            ],
+                        ] );
+                    ?>
                 </div>
             </div>
         <?php }
