@@ -3,7 +3,7 @@ Contributors: themexriver1
 Tags:product gallery, woocommerce swiper slider image gallery, additional variation image gallery, product variation image gallery, product variation image, variation images gallery
 Requires at least: 5.0
 Tested up to: 6.4.3
-Stable tag: 1.0
+Stable tag: 1.0.0
 Requires PHP: 7.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
