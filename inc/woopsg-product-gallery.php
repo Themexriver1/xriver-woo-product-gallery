@@ -11,11 +11,16 @@ $popup_video   = get_post_meta( get_the_ID(), 'woopgfs_product_popup_video', tru
 
 wp_nonce_field('woopsg_product_gallery_nonce', 'woopsg_product_gallery_nonce');
 
-if (isset($_GET['woopsg_product_gallery_nonce']) && wp_verify_nonce($_GET['woopsg_product_gallery_nonce'], 'woopsg_product_gallery_nonce')) {
-    $video_type = isset($_GET['video']) ? esc_html($_GET['video']) : get_post_meta(get_the_ID(), 'woopgfs_product_video_type', true );
+if (isset($_GET['woopsg_product_gallery_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['woopsg_product_gallery_nonce'])), 'woopsg_product_gallery_nonce')) {
+    $video_type = isset($_GET['video']) ? sanitize_text_field($_GET['video']) : get_post_meta(get_the_ID(), 'woopgfs_product_video_type', true);
 } else {
-    die('Security check failed');
+    die(esc_html__('Security check failed', 'xriver-woo-product-gallery'));
 }
+
+
+
+
+
 $attachment_ids = $product->get_gallery_image_ids();
 $lightbox_enable = $proopt['lightbox_enable'];
 ?>

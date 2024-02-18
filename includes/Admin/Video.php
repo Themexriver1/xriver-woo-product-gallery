@@ -95,22 +95,26 @@ class Video {
         }
 
         // Verify nonce
-        if ( !isset( $_POST['woopgfs_video_settings_nonce'] ) || !wp_verify_nonce( $_POST['woopgfs_video_settings_nonce'], 'woopgfs_save_video_settings' ) ) {
+        if ( ! isset( $_POST['woopgfs_video_settings_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woopgfs_video_settings_nonce'] ) ), 'woopgfs_save_video_settings' ) ) {
             return;
         }
+        
+        
 
         $options = array(
             'woopgfs_product_video_type',
             'woopgfs_product_popup_video',
             'woopgfs_product_iframe_video',
         );
-        foreach ( $options as $option ) {
-            if ( isset( $_POST[$option] ) ) {
-                update_post_meta( $_post_id, $option, $_POST[$option] );
+        foreach ($options as $option) {
+            if (isset($_POST[$option])) {
+                $option_value = sanitize_text_field($_POST[$option]);
+                update_post_meta($_post_id, $option, $option_value);
             } else {
-                delete_post_meta( $_post_id, $option );
+                delete_post_meta($_post_id, $option);
             }
         }
+        
     }
 
 }
